@@ -53,6 +53,13 @@ INSTALLED_APPS = [
     'pack_orders'
 ]
 
+CORS_ORIGIN_WHITELIST = [
+    'https://package-seller.herokuapp.com',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+    'http://*:*'
+]
+
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
