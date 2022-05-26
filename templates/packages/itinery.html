@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+
+    <style>
+        .card-block {
+            font-size: 1em;
+            position: relative;
+            margin: 0;
+            padding: 1em;
+            border: none;
+            border-top: 1px solid rgba(34, 36, 38, .1);
+            box-shadow: none;
+
+        }
+
+        .card {
+            font-size: 1em;
+            overflow: hidden;
+            padding: 5;
+            border: none;
+            border-radius: .28571429rem;
+            box-shadow: 0 1px 3px 0 #d4d4d5, 0 0 0 1px #d4d4d5;
+            margin-top: 5px;
+            width: 100%;
+        }
+
+        .margin0 {
+            margin: 0 auto;
+        }
+
+        p {
+            margin-bottom: .1rem !important;
+
+
+        }
+
+       
+    </style>
+</head>
+
+<body>
+
+{% comment %} 
+    <div class="container">
+        <header>
+
+            <div class="row p-4" style="margin-top: 20px;">
+                <div class="col-10">
+                   <p> <b>{{ Name }}</b> trip to</p>
+                    <h3 >{{ TripName }}</h3>
+                    <p>Flexi Package</p>
+                    <div style="font-weight: bold;">
+                        Vacation in Manali - with Volvo from Delhi
+                    </div>
+                </div>
+
+                <div class="col-2">
+                    <img src="http://127.0.0.1:8000/media/assets/search.svg" class="w-100"  alt="Yolobus Logo" />
+               </div>
+               
+        
+              </div>
+        </header>
+
+
+
+        <div>
+            Day Wise Details
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <p style="font-weight: bold;">Day 1</p>
+            </div>
+            <div class="col-4"></div>
+            <div class="col-4">
+                <p style="font-weight: bold;"> Sat, 30 Apr 2022</p>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-4">
+                Hotel in Manali 3 Nights
+            </div>
+            <div class="col-4"></div>
+            <div class="col-4">
+
+            </div>
+        </div>
+
+        <div class="card float-right">
+            <div class="row">
+                <div class="col-7">
+                    <div class="row">
+
+                        <div class="col-6">
+                            <img class="d-block w-100 img-fluid img-thumbnail "
+                                src="https://picsum.photos/150?image=641" alt="">
+                        </div>
+                        <div class="col-6">
+                            <img class="d-block w-100 img-fluid img-thumbnail "
+                                src="https://picsum.photos/150?image=641" alt="">
+                        </div>
+                        <div class="col-12 pt-1">
+                            <img class="d-block w-100 img-fluid img-thumbnail margin0 "
+                                src="https://picsum.photos/150?image=641" alt="">
+                        </div>
+                        
+
+                    </div>
+
+                </div>
+                <div class="col-5">
+                    <div class="card-block">
+
+                        <div class="row">
+                            <div class="col-6"> Check In</div>
+                            <div class="col-6"> Check Out</div>
+                            <div class="col-6 pt-2" style="font-weight: bold;">30 Apr, Sat 12 PM</div>
+
+
+                            <div class="col-6 pt-2" style="font-weight: bold;">03 May, Tue 11 AM</div>
+                            <div class="col-12 pt-2">
+                                <p>Meal Plan <b>Breakfast</b></p>
+                            </div>
+                            <div class="col-12 pt-2 ">
+                                <p>Room Type <b>Super Deluxe Room x1</b></p>
+                            </div>
+                            <div class="col-12 pt-2">
+                                <p>Room Size <b>144 sq.ft</b></p>
+                            </div>
+                            <div class="col-12 pt-2">
+                                <p>Bed Type <b>Queen Bed</b></p>
+                            </div>
+                        </div>
+
+
+
+                        <br>
+                        <!-- <a href="#" class="btn btn-primary btn float-right">Read More</a> -->
+                    </div>
+                </div>
+                <div class="col-2"></div>
+
+            </div>
+        </div>
+        <hr />
+
+
+        <div class="row">
+            <div class="col-4">
+                Private Non AC Mini Car - Non AC for
+                sightseeing in & around Manali
+
+            </div>
+            <div class="col-4"></div>
+            <div class="col-4">
+
+            </div>
+        </div>
+
+
+        <div class="card float-right">
+            <div class="row">
+                <div class="col-3">
+                    <img class="d-block w-100 img-fluid margin0"
+                        src="data:image/png;base64,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"
+                        alt="">
+                </div>
+                <div class="col-7">
+                    <div class="card-block">
+
+                        <div class="row">
+
+                            <p style="font-weight: bold;"> Private Transfer/ Mini Car - Non AC</p>
+
+                            <p>WagonR or Similar</p>
+                            <p style="font-weight: bold;">Facilities</p>
+                            <p>3 Seater| 2 Luggage Bags| First Aid</p>
+
+
+
+
+                        </div>
+
+
+
+                        <br>
+                        <!-- <a href="#" class="btn btn-primary btn float-right">Read More</a> -->
+                    </div>
+                </div>
+                <div class="col-2"></div>
+
+            </div>
+        </div>
+        <hr />
+
+
+        <div class="row">
+            <div class="col-4">
+                <p>Activity 12 hrs </p>
+                <p style="font-weight: bold;">Bus Tickets from Delhi to Manali</p>
+                <br />
+
+
+            </div>
+            <div class="col-4"></div>
+            <div class="col-4">
+
+            </div>
+        </div>
+
+
+        <div class="card float-right">
+            <div class="row">
+                <div class="col-3">
+                    <img class="d-block w-100  img-fluid margin0"
+                        src="https://assets.volvo.com/is/image/VolvoInformationTechnologyAB/1860x1050-9700-teaser-2018?qlt=82&wid=1440&ts=1629860473425&dpr=off&fit=constrain"
+                        alt="">
+                </div>
+                <div class="col-7">
+                    <div class="card-block">
+
+                        <div class="row">
+
+
+
+                            <p>
+
+                                About Pick up time: Between 4PM to 6PM Pick up point:
+                                Majnu ka Tila. Duration:10 hours. Note: The bus will depart
+                                one day prior to the date ofthe package that you have
+                                bought. For Example: if you have bought a package for 10th
+                                July then your bus will departfrom Delhi on 9th Evening.
+                            </p>
+
+
+
+
+                        </div>
+
+
+
+                        <br>
+                        <!-- <a href="#" class="btn btn-primary btn float-right">Read More</a> -->
+                    </div>
+                </div>
+                <div class="col-2"></div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+
+ {% endcomment %}
+
+
+    <div class="container p-4" style="margin-top: 20px;">
+        <img src="http://127.0.0.1:8000/media/assets/search.svg"
+             width="200"
+             alt="Yolobus Logo"/>
+        <h1>
+            {{ Name }} <span style="font-weight: 100;">Trip To</span>
+        </h1>
+        <h1 style="font-size: 48px;">{{ TripName }}</h1>
+        <hr />
+        <div class="card well">
+            <h1>Total Cost Including Tax</h1>
+            <em>Note: All above prices are subject to change without prior notice as per availability, the final date of
+            travel and any changes in taxes.</em>
+            <h1>₹ {{ extras.package_price }}</h1>
+        </div>
+        <div class="container p-4">
+            <h1>Your Itinerary</h1>
+            <div class="card">
+                <table class="table table-stripped">
+                    {% for details in summary %}
+                        {% with details.activities.summary as activities %}
+                            <tr>
+                                <td>DAY {{ details.dayIndex | add:1 }}</td>
+                                <td>
+                                    <ul class="list-group">
+                                        {% for activity in activities %}<li class="list-group-item">{{ activity.name }}</li>{% endfor %}
+                                    </ul>
+                                </td>
+                            </tr>
+                        {% endwith %}
+                    {% endfor %}
+                </table>
+            </div>
+            <div class="p-4">
+                <h1>Day wise Details</h1>
+                {% for detail in summary %}
+                    <h2 class="list-group-item">DAY {{ detail.dayIndex|add:1 }}</h2>
+                    <hr />
+                    <div class="list-group">
+                        <div class="list-group-item d-flex items-center justify-content-between">
+                            <h3>{{ detail.hotel.name }}</h3>
+                            <div class="stars">
+                                {% with ''|center:detail.hotel.stars as range %}
+                                    {% for _ in range %}<span class="badge">★</span>{% endfor %}
+                                {% endwith %}
+                            </div>
+                        </div>
+                        {% for room in detail.hotel.rooms %}
+                            <div class="list-group-item">
+                                <h2>Room/{{ room.category.name }}</h2>
+                            </div>
+                            <div class="list-group-item">
+                                <ol>
+                                    {% for meal in  room.meals %}<li>{{ meal.name }}</li>{% endfor %}
+                                </ol>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="container">
+                        <div class="row">
+                            {% for image in detail.hotel.images %}
+                                <div class="col">
+                                    <img src="http://127.0.0.1:8000{{ image }}"  width="300"/>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="list-group-item">
+                        <h3>DAY {{ detail.dayIndex|add:1 }} - Activities</h3>
+                    </div>
+                    <div class="list-group mt-4">
+                        {% for activity in detail.activities.summary %}
+                            <div class="list-group-item">
+                                <h5>{{ activity.name }}</h5>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="list-group-item">
+                        <h3>BUS</h3>
+                    </div>
+                    <div class="list-group">
+                        {% if detail.bus %}
+                            {% with detail.bus.summary as bus %}
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        {{ bus.type.name }} : <strong>Delhi</strong> ⟶ <strong>Lucknow</strong>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>Boarding Point :</strong> {{ bus.boarding_point }}
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>Dropping Point :</strong> {{ bus.dropping_point }}
+                                    </li>
+                                    <li class="list-group-item">
+                                        {% for image in detail.bus.summary.images %}<img src="http://127.0.0.1:8000{{ image }}" width="310" />{% endfor %}
+                                    </li>
+                                </ul>
+                            {% endwith %}
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="list-group">
+            <div class="list-group-item">
+                <strong>Customer Name:</strong> {{ Name }}
+            </div>
+            <div class="list-group-item">
+                <strong>Email:</strong> {{ Email }}
+            </div>
+            <div class="list-group-item">
+                <strong>Contact Number:</strong> {{ Contact }}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

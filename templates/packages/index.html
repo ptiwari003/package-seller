@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Test PDF</title>
+        <!-- <link rel="stylesheet"
+       href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+       integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+       crossorigin="anonymous"> -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+              rel="stylesheet">
+        <style>
+                .card-block {
+                    font-size: 1em;
+                    position: relative;
+                    margin: 0;
+                    padding: 1em;
+                    border: none;
+                    border-top: 1px solid rgba(34, 36, 38, .1);
+                    box-shadow: none;
+        
+                }
+        
+                .card {
+                    font-size: 1em;
+                    overflow: hidden;
+                    padding: 5;
+                    border: none;
+                    border-radius: .28571429rem;
+                    box-shadow: 0 1px 3px 0 #d4d4d5, 0 0 0 1px #d4d4d5;
+                    margin-top: 5px;
+                    width: 100%;
+                }
+        
+                .margin0 {
+                    margin: 0 auto;
+                }
+        
+                p {
+                    margin-bottom: .1rem !important;
+        
+        
+                }
+        
+               
+        </style>
+    </head>
+    <body>
+        <div class="container-fluid">
+            <header>
+                <div class="row p-4" style="margin-top: 20px;">
+                    <div class="col-8">
+                        <p>
+                            <b>{{ Name }}</b> trip to
+                        </p>
+                        <h3 >{{ TripName }}</h3>
+                        <p>Flexi Package</p>
+                        <div style="font-weight: bold;">{{ TripName }}</div>
+                    </div>
+                    <div class="col-2">
+                        <img src="http://127.0.0.1:8000/media/assets/search.svg"
+                             class="w-100"
+                             alt="Yolobus Logo"/>
+                    </div>
+                    <div class="col-2">
+                        {% if take_rate > 15 %}
+                            <button disabled>Print</button>
+                        {% else %}
+                            <button onclick="window.print()">Print</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </header>
+            <div class="card well p-4 mb-4">
+                <h1>Total Cost Including Tax</h1>
+                <em>Note: All above prices are subject to change without prior notice as per availability, the final date of
+                travel and any changes in taxes.</em>
+                <h1>₹ {{ extras.package_price }}</h1>
+            </div>
+            <div>Day Wise Details</div>
+            {% for detail in summary %}
+                <div class="row">
+                    <div class="col-4">
+                        <p style="font-weight: bold;">Day {{ detail.dayIndex | add:1 }}</p>
+                    </div>
+                    <div class="col-4"></div>
+                </div>
+                <div class="card float-right mt-4 mb-4">
+                    <div class="row">
+                        <div class="col-3">
+                            <img class="d-block w-100  img-fluid margin0"
+                                 src="https://assets.volvo.com/is/image/VolvoInformationTechnologyAB/1860x1050-9700-teaser-2018?qlt=82&wid=1440&ts=1629860473425&dpr=off&fit=constrain"
+                                 alt="">
+                        </div>
+                        <div class="col-7">
+                            <div class="card-block">
+                                <div class="row">
+                                    <p>
+                                        <strong class="badge bg-primary h3">Bus Type</strong>  <strong>{{ detail.bus.summary.type.name }}</strong>
+                                    </p>
+                                    <p>
+                                        About Pick up point:
+                                        {{ detail.bus.summary.boarding_point }} - ({{ detail.source }}) .
+                                        <br/>
+                                        Note: The bus will depart
+                                        one day prior to the date of the package that you have
+                                        bought.
+                                    </p>
+                                </div>
+                                <br>
+                                <!-- <a href="#" class="btn btn-primary btn float-right">Read More</a> -->
+                            </div>
+                        </div>
+                        <div class="col-2"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4 mt-4">
+                        <strong>Hotel  &emsp; {{ TripName }}</strong>
+                    </div>
+                    <div class="col-4"></div>
+                    <div class="col-4"></div>
+                </div>
+                <div class="card float-right">
+                    <div class="row">
+                        <div class="col-7">
+                            <div class="row">
+                                {% for image in detail.hotel.images %}
+                                    <div class="col-6">
+                                        <img class="d-block w-100 img-fluid img-thumbnail "
+                                             src="http://127.0.0.1:8000{{ image }}"
+                                             alt="">
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-5">
+                            <div class="card-block">
+                                {% for room in detail.hotel.rooms %}
+                                    <div class="row">
+                                        <!-- <div class="col-6">Check In</div>
+                                        <div class="col-6">Check Out</div>
+                                        <div class="col-6 pt-2" style="font-weight: bold;">30 Apr, Sat 12 PM</div>
+<div class="col-6 pt-2" style="font-weight: bold;">03 May, Tue 11 AM</div> -->
+                                        <div class="col-12 pt-2">
+                                            <p>
+                                                Meal Plan
+                                                {% for meal in room.meals %}
+                                                    <span class="badge bg-primary">
+                                                        <b>{{ meal.name }} </b>
+                                                    </span>
+                                                {% endfor %}
+                                            </p>
+                                        </div>
+                                        <div class="col-12 pt-2 ">
+                                            <p>
+                                                Room Type &nbsp; <span class="badge bg-secondary"> <b>{{ room.category.name }}</b> </span>
+                                            </p>
+                                        </div>
+                                        <!-- <div class="col-12 pt-2">
+                                            <p>
+                                                Room Size <b>144 sq.ft</b>
+                                            </p>
+                                        </div>
+                                        <div class="col-12 pt-2">
+                                            <p>
+                                                Bed Type <b>Queen Bed</b>
+                                            </p>
+                                        </div> -->
+                                    </div>
+                                {% endfor %}
+                                <br>
+                                <!-- <a href="#" class="btn btn-primary btn float-right">Read More</a> -->
+                            </div>
+                        </div>
+                        <div class="col-2"></div>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-4">
+                        <strong>Activities  around {{detail.destination}}</strong>
+                    </div>
+                    <div class="col-4"></div>
+                    <div class="col-4">
+                    </div>
+                </div>
+                <div class="card float-right">
+                    <div class="row">
+                        <div class="col-7">
+                            <div class="card-block">
+                                <div class="row mt-2">
+                                    {% for activity in detail.activities.summary %}
+                                        <div class="mt-2 d-flex">
+                                            <div class="icon" style="width: 50px;margin-right: 4px;">
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                     class="h-5 w-5"
+                                                     viewBox="0 0 20 20"
+                                                     fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <strong>{{ activity.name }}</strong>
+                                                <span class="text-grey">
+                                                    {{ activity.description }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <br>
+                                <!-- <a href="#" class="btn btn-primary btn float-right">Read More</a> -->
+                            </div>
+                        </div>
+                        <div class="col-2">
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-4">
+                        <p style="font-weight: bold;">
+                            Bus Tickets from <strong class="badge bg-primary">{{ detail.source }}</strong>  to  <strong class="badge bg-primary">{{ detail.destination }}</strong>
+                        </p>
+                        <br />
+                    </div>
+                    <div class="col-4">
+                    </div>
+                    <div class="col-4">
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>
