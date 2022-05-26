@@ -25,6 +25,7 @@ SECRET_KEY = 'django-insecure-rd%bjt(79609h@s)hfq_b-*6=l-pd!ff5fc#bn0l0o$stkk24q
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+CORS_ORIGIN_ALLOW_ALL = True 
 
 ALLOWED_HOSTS = [
     'localhost',
@@ -53,12 +54,12 @@ INSTALLED_APPS = [
     'pack_orders'
 ]
 
-CORS_ORIGIN_WHITELIST = [
-    'https://package-seller.herokuapp.com',
-    'http://localhost:8000',
-    'http://127.0.0.1:8000',
-    'http://*:*'
-]
+# CORS_ORIGIN_WHITELIST = [
+#     'https://package-seller.herokuapp.com',
+#     'http://localhost:8000',
+#     'http://127.0.0.1:8000',
+#     'http://*:*'
+# ]
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -164,4 +165,3 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'static/'
 
 
-CORS_ORIGIN_ALLOW_ALL = True 
