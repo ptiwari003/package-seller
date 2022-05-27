@@ -7,10 +7,19 @@ from .models import HotelCategory, HotelImage, RoomCategory, Hotel, MealPlan, Ro
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
 
+
 class HotelCategorySerializer(ModelSerializer):
     class Meta:
         model = HotelCategory
         fields = ['id', 'name']
+
+class HotelSerializer(serializers.ModelSerializer):
+    city = CityModelSerializer(many=False)
+    category = HotelCategorySerializer(many=False)
+    class Meta:
+        model=Hotel
+        fields=['id', 'name','stars','address','budget','is_active','category','city']
+
         
 
 class RoomCategorySerializer(ModelSerializer):

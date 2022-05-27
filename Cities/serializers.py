@@ -19,7 +19,10 @@ class PairListSerialzier(serializers.Serializer):
     destination_id = serializers.IntegerField()
     source_id = serializers.IntegerField()
     
-    
+class CityModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = City
+        fields = '__all__'
 
 class PairSerializer(serializers.Serializer):
     

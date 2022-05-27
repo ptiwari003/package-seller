@@ -1,10 +1,11 @@
 from unicodedata import name
 from django.urls import path
 from .views import HOtelCrudView, RoomCategoryCrudView,ResourcesView
-from .hotels import create_hotel, add_room , add_images, add_meal, get_hotel_list, get_hotel_list_in_city
+from .hotels import create_hotel, add_room , add_images, add_meal, get_hotel_list, get_hotel_list_in_city, HotelListView
 
 
 urlpatterns = [
+    path('hotel_list/<int:city>', HotelListView.as_view(), name="hotel_list"),
     path('hotel_categories', HOtelCrudView.as_view(), name="hotel_crud_view"),
     path('room_categories', RoomCategoryCrudView.as_view(), name='room_crud_view'),
     path('resources', ResourcesView.as_view(), name='resources'),

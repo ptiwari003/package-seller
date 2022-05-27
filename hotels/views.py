@@ -5,8 +5,14 @@ from .models import HotelCategory, RoomCategory, ImageResource
 from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
 
-from .serializers import HotelCategorySerializer, RoomCategorySerializer
+from .serializers import HotelCategorySerializer, RoomCategorySerializer,HotelSerializer, Hotel
 
+
+class HotelListView(views.APIView):
+    def get(self,_,city,format=None):
+        _hotel_list = Hotel.objects.all().filter(city=city)
+        _serializer = HotelSerializer(_hotel_list,many=True)
+        return Response(_serializer.data,status=200)
 
 class HOtelCrudView(views.APIView):
     
