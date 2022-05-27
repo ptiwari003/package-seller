@@ -88,3 +88,8 @@ class HotelSerializer(ModelSerializer):
  
  
  
+class HotelISerializer(ModelSerializer):
+    
+    class Meta:
+        model = Hotel
+        fields = '_all_'

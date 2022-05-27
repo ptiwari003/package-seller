@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view, authentication_classes
 from rest_framework.authentication import TokenAuthentication
 
 
-from hotels.serializers import HotelSerializer
+from hotels.serializers import HotelISerializer, HotelSerializer
 from .models import (
     Hotel,
     HotelCategory,
@@ -171,7 +171,7 @@ def add_meal(request, room, hotel):
 def get_hotel_list(_request, cityId):
     _hotel_objects_ = Hotel.objects.filter(Q(city__pk= cityId))
     
-    _serializer = HotelSerializer(_hotel_objects_, many=True)
+    _serializer = HotelISerializer(_hotel_objects_, many=True)
     
     return Response(_serializer.data, 200)
 
