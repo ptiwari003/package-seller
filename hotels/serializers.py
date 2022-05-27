@@ -92,4 +92,4 @@ class HotelISerializer(ModelSerializer):
     
     class Meta:
         model = Hotel
-        fields = '_all_'
+        fields = '__all__'
