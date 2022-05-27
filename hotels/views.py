@@ -7,7 +7,15 @@ from rest_framework.authentication import TokenAuthentication
 
 from .serializers import HotelCategorySerializer, RoomCategorySerializer,HotelSerializer
 
-
+class UserProfileView(views.APIView):
+    
+    authentication_classes = (TokenAuthentication,)
+    
+    def get(self, request, format=None):
+        _user_data_ = request.user
+        
+        return Response({'username': _user_data_.username})
+        
 class HotelListView(views.APIView):
     def get(self,_,city,format=None):
         _hotel_list = Hotel.objects.all().filter(city=city)

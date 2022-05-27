@@ -1,6 +1,6 @@
 from unicodedata import name
 from django.urls import path
-from .views import HOtelCrudView, RoomCategoryCrudView,ResourcesView
+from .views import HOtelCrudView, RoomCategoryCrudView,ResourcesView, UserProfileView
 from .hotels import create_hotel, add_room , add_images, add_meal, get_hotel_list, get_hotel_list_in_city
 
 
@@ -15,5 +15,5 @@ urlpatterns = [
     path('add_meal/<int:room>/hotel/<int:hotel>', add_meal, name='add_meal'),
     path('fetch/hotels/<str:city>', get_hotel_list_in_city, name='hotel_list_city'),
     path('list/hotels/<int:city>/category/<int:category>', get_hotel_list, name='hotel_list'),
-    # path('user/profile', UserProfileView.as_view(), name="user profile")
+    path('user/profile', UserProfileView.as_view(), name="user profile")
 ]
