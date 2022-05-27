@@ -2,7 +2,7 @@ from dataclasses import field, fields
 from pyexpat import model
 from re import L
 from statistics import mode
-from Cities.serializers import CityModelSerializer
+from Cities.serializers import CityModelSerializer,CitySerializer
 
 from .models import HotelCategory, HotelImage, RoomCategory, Hotel, MealPlan, Room
 from rest_framework.serializers import ModelSerializer, SerializerMethodField

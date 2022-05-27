@@ -1,11 +1,11 @@
 from django.shortcuts import render
 from rest_framework import views
 # Create your views here.
-from .models import HotelCategory, RoomCategory, ImageResource
+from .models import HotelCategory, RoomCategory, ImageResource,Hotel
 from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
 
-from .serializers import HotelCategorySerializer, RoomCategorySerializer,HotelSerializer, Hotel
+from .serializers import HotelCategorySerializer, RoomCategorySerializer,HotelSerializer
 
 
 class HotelListView(views.APIView):
