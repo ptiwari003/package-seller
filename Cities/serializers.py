@@ -38,7 +38,10 @@ class PairSerializer(serializers.Serializer):
         return CityPair.objects.create(source= _source, destination= _destination)
     
 
-    
+
+class CityListSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name=serializers.CharField(max_length=50)
     
 class CitySerializer(serializers.ModelSerializer):
     
