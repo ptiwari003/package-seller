@@ -9,6 +9,7 @@ from .views import (
 )
 
 urlpatterns = [
+    path('list/<int:city>', get_bus_type_citywise, name="hotel_crud_view"),
     path('types', get_bus_type, name="hotel_crud_view"),
     path('bus/types', create_bus_type, name="create_bus_type"),
     path('add_bus', create_bus, name='add_bus'),
