@@ -4,18 +4,20 @@ from rest_framework import serializers
 
 class Pair:
     
-    def __init__(self, id, source, destination) -> None:
+    def __init__(self, id, source, destination, source_id ,destination_id) -> None:
+        self.id = id
         self.source = source
         self.destination = destination
-        self.id = id
-        
+        self.destination_id= destination_id
+        self.source_id= source_id
 
 
 class PairListSerialzier(serializers.Serializer):
-    
+    id = serializers.IntegerField()
     source = serializers.CharField(max_length=255)
     destination = serializers.CharField(max_length = 255)
-    id = serializers.IntegerField()
+    destination_id = serializers.IntegerField()
+    source_id = serializers.IntegerField()
     
     
 

@@ -12,7 +12,7 @@ from .serializers import (Pair, PairSerializer, PairListSerialzier)
 class PairList(APIView):
     
     def get(self, _, format=None):
-        _pair_datasource = [ Pair(p.pk, p.source.name, p.destination.name) for p in CityPair.objects.all() ]
+        _pair_datasource = [ Pair(p.pk, p.source.name, p.destination.name, p.source.pk, p.destination.pk) for p in CityPair.objects.all() ]
 
         _pairs = PairListSerialzier(_pair_datasource, many=True)
         
