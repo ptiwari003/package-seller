@@ -165,16 +165,27 @@ def add_meal(request, room, hotel):
     
 
 
+
 @api_view(['GET'])
 @authentication_classes([TokenAuthentication])
-def get_hotel_list(request, city, category):
-    _hotel_objects = Hotel.objects.filter(
-        Q(city__pk = city) & Q(category__id = category)
-    ) 
+def get_hotel_list(_request, cityId):
+    _hotel_objects_ = Hotel.objects.filter(Q(city__pk= cityId))
     
-    _serializer = HotelSerializer(_hotel_objects, many=True)
+    _serializer = HotelSerializer(_hotel_objects_, many=True)
+    
+    return Response(_serializer.data, 200)
+
+
+# @api_view(['GET'])
+# @authentication_classes([TokenAuthentication])
+# def get_hotel_list(request, city, category):
+#     _hotel_objects = Hotel.objects.filter(
+#         Q(city__pk = city) & Q(category__id = category)
+#     ) 
+    
+#     _serializer = HotelSerializer(_hotel_objects, many=True)
            
-    return Response( _serializer.data , 200)
+#     return Response( _serializer.data , 200)
 
 
 @api_view(['GET'])

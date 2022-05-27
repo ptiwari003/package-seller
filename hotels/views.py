@@ -11,7 +11,9 @@ from .serializers import HotelCategorySerializer, RoomCategorySerializer,HotelSe
 class HotelListView(views.APIView):
     def get(self,_,city,format=None):
         _hotel_list = Hotel.objects.all().filter(city=city)
+        print(_hotel_list)
         _serializer = HotelSerializer(_hotel_list,many=True)
+        print(_serializer.data)
         return Response(_serializer.data,status=200)
 
 class HOtelCrudView(views.APIView):
