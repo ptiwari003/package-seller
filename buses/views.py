@@ -116,8 +116,6 @@ def create_bus_type(request):
     return Response(_serializer.errors, 400)
 
 
-
-
 @api_view(['GET'])
 @transaction.atomic()
 def get_bus_type_citywise(request,city):
