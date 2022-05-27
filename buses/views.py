@@ -124,6 +124,7 @@ def get_bus_type_citywise(request,city):
     return Response(_serializer.data, 200) 
 
 
+
 @api_view(['GET'])
 @authentication_classes([TokenAuthentication])
 def get_buses(request):
@@ -140,7 +141,7 @@ def get_buses(request):
         print((_city, _type))
         
         _bus_objects = Bus.objects.filter(
-            Q(source__name__icontains = _city) & Q(type__pk = _type)
+            Q(pair__source__name = _city) & Q(type__pk = _type)
         )
         
         _serailizer = BusSerializer(_bus_objects, many=True)
@@ -148,6 +149,33 @@ def get_buses(request):
         return Response(_serailizer.data, 200)    
     
     return Response({'message':'NOP'})
+
+
+# @api_view(['GET'])
+# @authentication_classes([TokenAuthentication])
+# def get_buses(request):
+#     _query = parse_qs(request.GET.urlencode())
+    
+#     _query_dict = _query
+    
+#     print(_query_dict)
+    
+#     if('city' in _query_dict.keys()) and ('type' in _query_dict.keys()):
+#         _city = _get_first_item(_query_dict, 'city')
+#         _type = _get_first_item(_query_dict, 'type')
+        
+#         print((_city, _type))
+        
+#         _bus_objects = Bus.objects.filter(
+#             Q(source__name__icontains = _city) & Q(type__pk = _type)
+#         )
+        
+#         _serailizer = BusSerializer(_bus_objects, many=True)
+        
+#         return Response(_serailizer.data, 200)    
+    
+#     return Response({'message':'NOP'})
+
 
 
 
