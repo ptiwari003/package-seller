@@ -68,6 +68,7 @@ class HotelSerializer(ModelSerializer):
    
    def _get_images_ (self, instance):
        _images = HotelImage.objects.filter(hotel__pk= instance.pk)
+       print(_images)
        _image = _images[0]
        
        return [ _image.image.image.url for _image in _images]
