@@ -11,7 +11,7 @@ from .serializers import (Pair, PairSerializer, PairListSerialzier, CitySerializ
 
 class CityList(APIView):
     def get(self, _, format=None):
-        _city_datasource = [ CitySerializer(c.pk, c.name) for c in City.objects.all() ]
+        _city_datasource = [ CitySerializer(c) for c in City.objects.all() ]
 
         _cities = CityListSerializer(_city_datasource, many=True)
         
