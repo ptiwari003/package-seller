@@ -1,7 +1,7 @@
 from unicodedata import name
 from django.urls import path
-from .views import HOtelCrudView, RoomCategoryCrudView,ResourcesView
-from .hotels import create_hotel, add_room , add_images, add_meal, get_hotel_list, get_hotel_list_in_city, HotelListView
+from .views import HOtelCrudView, RoomCategoryCrudView,ResourcesView,HotelListView
+from .hotels import create_hotel, add_room , add_images, add_meal, get_hotel_list, get_hotel_list_in_city
 
 
 urlpatterns = [
