@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 from django.db import transaction
 from hotels.models import ImageResource
-
+from Cities.models import CityPair
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import authentication_classes
 
