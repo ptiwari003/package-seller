@@ -58,18 +58,31 @@ def get_bus_type(request):
 
 
 
+# @api_view(['POST'])
+# @authentication_classes([TokenAuthentication])
+# @transaction.atomic()
+# def create_bus(request):
+#     _serializer = BusSerializer(data= {**request.data})
+#     if _serializer.is_valid():
+#         _serializer.save()
+        
+#         return Response(_serializer.data, 200)
+    
+#     return Response(_serializer.errors, 400)
+
+
+
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @transaction.atomic()
 def create_bus(request):
-    _serializer = BusSerializer(data= {**request.data})
-    if _serializer.is_valid():
-        _serializer.save()
-        
-        return Response(_serializer.data, 200)
+    print(request.data.get('pair'))
+    __pair__ = CityPair.objects.get(pk=request.data.get('pair'))
+    __type_ = BusType.objects.get(pk=request.data.get('type'))
+    _bus_ =  Bus(**{**request.data, 'pair':__pair__, 'type':__type_})
     
-    return Response(_serializer.errors, 400)
-
+    _bus_.save()
+    return Response({'message':'Bus created'})
 
 
 @api_view(['POST'])
