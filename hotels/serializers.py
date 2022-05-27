@@ -79,8 +79,8 @@ class HotelSerializer(ModelSerializer):
        _images = HotelImage.objects.filter(hotel__pk= instance.pk)
        print(_images)
        _image = _images[0]
-       return _images
-    #    return [ _image.image.image.url for _image in _images]
+       
+       return [ _image.image.image.url for _image in _images]
    
    class Meta:
        model = Hotel
