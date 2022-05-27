@@ -132,7 +132,7 @@ def create_bus_type(request):
 @api_view(['GET'])
 @transaction.atomic()
 def get_bus_type_citywise(request,city):
-    _data = Bus.objects.all().filter(source=city)
+    _data = Bus.objects.all().filter(pair=city)
     _serializer = BusSerializer(_data, many=True)
     return Response(_serializer.data, 200) 
 
