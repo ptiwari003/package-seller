@@ -82,7 +82,7 @@ def create_bus(request):
     _bus_ =  Bus(**{**request.data, 'pair':__pair__, 'type':__type_})
     
     _bus_.save()
-    return Response({'message':'Bus created'})
+    return Response({'message':'Bus created','data':_bus_})
 
 
 @api_view(['POST'])
