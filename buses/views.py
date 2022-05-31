@@ -80,9 +80,8 @@ def create_bus(request):
     __pair__ = CityPair.objects.get(pk=request.data.get('pair'))
     __type_ = BusType.objects.get(pk=request.data.get('type'))
     _bus_ =  Bus(**{**request.data, 'pair':__pair__, 'type':__type_})
-    print(_bus_)
     _bus_.save()
-    return Response({'message':'Bus created'})
+    return Response({'message':'Bus created','id':_bus_.pk})
 
 
 @api_view(['POST'])
