@@ -82,7 +82,10 @@ def create_bus(request):
     _bus_ =  Bus(**{**request.data, 'pair':__pair__, 'type':__type_})
     
     _bus_.save()
-    return Response({'message':'Bus created','data':_bus_})
+    _data = BusSerializer(_bus_)
+    print("BUS ADDING DATA")
+    print(_data.data)
+    return Response({'message':'Bus created'})
 
 
 @api_view(['POST'])
