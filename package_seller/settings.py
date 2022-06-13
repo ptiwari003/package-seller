@@ -28,7 +28,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'localhost',
-    '127.0.0.1'
+    '127.0.0.1',
+    'package-seller.herokuapp.com'
 ]
 
 
@@ -50,6 +51,30 @@ INSTALLED_APPS = [
     'hotels',
     'buses',
     'pack_orders'
+]
+
+CORS_ORIGIN_WHITELIST = [
+    'https://package-seller.herokuapp.com',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]
+
+
+CORS_ALLOW_METHODS = [
+    'GET',
+    'POST',
+    'OPTIONS'
+]
+CORS_ALLOW_HEADERS = [
+'accept',
+'accept-encoding',
+'authorization',
+'content-type',
+'dnt',
+'origin',
+'user-agent',
+'x-csrftoken',
+'x-requested-with',
 ]
 
 MIDDLEWARE = [
