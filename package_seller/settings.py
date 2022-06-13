@@ -65,6 +65,7 @@ CORS_ALLOW_METHODS = [
     'POST',
     'OPTIONS'
 ]
+
 CORS_ALLOW_HEADERS = [
 'accept',
 'accept-encoding',
