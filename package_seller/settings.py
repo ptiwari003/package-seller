@@ -25,12 +25,10 @@ SECRET_KEY = 'django-insecure-rd%bjt(79609h@s)hfq_b-*6=l-pd!ff5fc#bn0l0o$stkk24q
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-# CORS_ORIGIN_ALLOW_ALL = True 
 
 ALLOWED_HOSTS = [
     'localhost',
-    '127.0.0.1',
-    'package-seller.herokuapp.com'
+    '127.0.0.1'
 ]
 
 
@@ -54,29 +52,6 @@ INSTALLED_APPS = [
     'pack_orders'
 ]
 
-CORS_ORIGIN_WHITELIST = [
-    'https://package-seller.herokuapp.com',
-    'http://localhost:8000',
-    'http://127.0.0.1:8000',
-]
-
-
-CORS_ALLOW_METHODS = [
-    'GET',
-    'POST',
-    'OPTIONS'
-]
-CORS_ALLOW_HEADERS = [
-'accept',
-'accept-encoding',
-'authorization',
-'content-type',
-'dnt',
-'origin',
-'user-agent',
-'x-csrftoken',
-'x-requested-with',
-]
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -118,17 +93,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
-# REST_FRAMEWORK = {
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         'rest_framework.authentication.BasicAuthentication',
-#         'rest_framework.authentication.SessionAuthentication',
-#     ],
-#     'DEFAULT_PERMISSION_CLASSES': [
-#         'rest_framework.permissions.IsAuthenticated',
-#     ]
-# }
-
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -181,6 +145,9 @@ USE_TZ = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+STATICFILES_DIRS = [
+    BASE_DIR / 'static'
+]
 
 MEDIA_ROOT = BASE_DIR / 'media/'
 
@@ -188,6 +155,6 @@ MEDIA_URL = '/media/'
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = BASE_DIR / 'static/'
 
 
+CORS_ORIGIN_ALLOW_ALL = True 

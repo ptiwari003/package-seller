@@ -1,16 +1,24 @@
-from cgitb import html
+from dataclasses import fields
+from email import message
 from functools import reduce
 from multiprocessing import context
-from unittest import result
+from pyexpat import model
 from django.shortcuts import render
-from io import BytesIO
 from django.http import HttpResponse
 from django.shortcuts import render
 
 from django.template.loader import get_template
 from django.views.generic import View
-from requests import delete
+from requests import request
+from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import serializers
+from json import dumps
+from rest_framework.decorators import api_view, authentication_classes , permission_classes
+
+
+NONE = '----'
+
 from xhtml2pdf import pisa
 
 from operator import contains, itemgetter
@@ -18,269 +26,347 @@ from operator import contains, itemgetter
 from json import loads, dumps
 
 
-from .models import PackageDetail
+from .models import OrderDetail, PackageDetail
 
-from .data import test_data, name, email, phone, tripName
+from .data import test_data
 
+class Planner :
+    
+    def __init__(self, data) -> None:
+        self.data = data
+        
+    def get_formated(self):
+        _calculated = self.__calculate__()
+        return _calculated
 
-
-
-def _define_dict(key, value):
-    _d = dict()
-    _d[key] = value
-    
-    return _d
-
-
-
-def render_to_pdf(template, context_dict={}):
-    
-    _template = get_template(template)
-    _html = _template.render(context_dict)
-    
-    result = BytesIO()
-    
-    _pdf = pisa.pisaDocument(BytesIO(_html.encode("utf-8")), result)
-    
-    if not _pdf.err:
-        return HttpResponse(result.getvalue(), content_type='application/pdf')
-    
-    return None
-
-
-
-class GenerateOrder:
-    
-    def __init__(self, payload, markup) -> None:
-        self._items = payload
-        self.markup = markup
-        
-        
-    def _map_meals_(self,room):
-        return {
-            **room,
-            **_define_dict('meals', list(filter( lambda x: x.get('selected') == True,  room.get('meals') )) )
-        }
-        
-        
-    def _calculate_rooms_price(self, rooms):
-        
-        __calc_room_price = lambda price, discount, tax : (price +  price *( tax/100)) - discount
-
-        _room_price = [ [x.get('cost_price'), x.get('tax', 12.00 ), x.get('discount')] for x in rooms] 
-        
-        _meal_price_ =  [ reduce( lambda x, y : x+y , list(map(lambda x: x.get('pricing'),  x)) ) for x in [list(filter( lambda mx: mx.get('selected') == True  , x.get('meals'))) for x in rooms] ]
-        
-        
-        _ttl_price =  reduce( 
-                   lambda x, y: x+y , 
-                map(lambda x: __calc_room_price(x[0]+x[1][0], x[1][2], x[1][1])   ,zip(_meal_price_, _room_price)),
-                0
-            )
-            
-        return _ttl_price
+    def __format_days__(self, data):
+        return [ {**x, 'day': x.get('day')+1 } for x in data]
     
     
-    def _parse_bus_payload_(self, bus):
-        
-        _tax = float(bus.get('tax'))
-        _pricing = float(bus.get('pricing'))
-        
-        return {
-            'summary': bus,
-            'total': _pricing + (_pricing * (_tax/ 100) )
-        }
-    
-        
-    
-    def _calculate_pricing_independent_(self, item):
-        
-        _hotel = item.get('hotel')
-        
-        _rooms_ = list(filter( lambda x: x.get('selected') == True  ,_hotel.get('rooms')))
-        
-        
-        conext =  {
-            **_define_dict('dayIndex', item.get('day')),
-            **_define_dict('source', item.get('source')),
-            **_define_dict('destination', item.get('destination')),
-            **_define_dict('activities', list(filter(lambda x: x.get('selected') == True ,item.get('activities')))),
-            **_define_dict('destination_activities', list(filter(lambda x: x.get('selected') == True ,item.get('destinationActivities')))),
-            **_define_dict('hotel', {
-                **item.get('hotel'),
-                'rooms':_rooms_
-                }),
-            **_define_dict('bus', self._parse_bus_payload_(item.get('bus')) )
-        }
-        
-        
-        return conext
-    
-    def _format_payload_acc_(self, plans):
-        
-        return list(
-            map(
-             self._map_activity_, plans   
-            )
-        )
-    
-
-
-    def _map_activity_(self, _plan):
-        
-        
-        
-        _calc_tax = lambda price, _tax_per : price + (price * (_tax_per / 100 ))
-        
-        _mapped_activity_ = [ {**x, 'costPrice': x.get('price'), 'basePrice': _calc_tax( float(x.get('price')),float( x.get('tax')))  } for x in _plan.get('activities') ]
-        
-        _activities_ = {
-            'summary': _mapped_activity_,
-            'total': reduce(lambda acc, next : acc + next , list(map( lambda x: x.get('basePrice'),_mapped_activity_ )) , 0 )        
-        }
-        
-        
-         
-        return ({
-            'dayIndex':_plan.get('dayIndex'),
-            'activities' :_activities_,
-            'bus':_plan.get('bus'),
-            'source':_plan.get('source'),
-            'destination':_plan.get('destination'),
-            'hotel':_plan.get('hotel')
-        })
+    def _get_activity_price_(self, activities):
+        return reduce( lambda x, y: x + y , [ (float(x[0]) + float(x[1])) for x in  [ (x.get('price'), x.get('tax', 0)) for x in activities ]])
     
     
     
-    def _calculate_hotel_pricing_(self, item):
-        _rooms = item.get('hotel').get('rooms')
+    def _calculate_hotel_cost (self, hotel):
+        _total = 0
+        _meal_pricing = 0
         
-        _calc_room_price = lambda price, tax: (price * (tax/100)) + price
-        
-        _room_total_ =  map(lambda x: ({
-            '#room_price':_calc_room_price(float(x.get('cost_price')), float(x.get('tax'))) - float(x.get('discount')),
-            '#meal_price': list(map( lambda y: y.get('pricing') ,x.get('meals')))    
-        }) , _rooms) 
-        
-        
-        _room_ttl_ = map( lambda x: float(x.get('#room_price'))+ float(reduce( lambda x, y: x+y , x.get('#meal_price') )) , _room_total_)    
-        
-        _bus = item.get('bus').get('total')
-        _activities = item.get('activities').get('total')
-        
+        if hotel is not None:
+            for room in hotel.get('rooms'):
+                _price = float(room.get('cost_price', 0))
+                _tax = float(room.get('tax', 0))
                 
-        return (
-            reduce(lambda x,y : x+y  ,_room_ttl_ , 0)
-          + _bus
-          + _activities
-        )
+                _room_price_ = _price + ( _price * (_tax / 100))
+                
+                for meal in room.get('meals', []):
+                    _m_price = float(meal.get('pricing'))
+                    _ttl_price_ = _room_price_ + _m_price
+                    _meal_pricing += _m_price
+                    
+                    _total += _ttl_price_
+                    
         
+        return _total
     
-    def _calculate_plan_pricing_(self, payload):
-        
-        _new_payload_ = list(map(self._calculate_hotel_pricing_, payload))
-        
-        return reduce( lambda x, y: x+y  ,_new_payload_, 0)
-        
+    def _add_record_(self,  day ,activities, hotel, bus):
+        return dict(day=day, activities=activities, hotel=hotel, bus=bus)
     
     
-    def _calculate_pricing_complete_(self, items, _markup):
-        _items_ = [self._calculate_pricing_independent_(x) for x in items]
-        _payload_  = self._format_payload_acc_(_items_)
+    def _calculate_bus_price(self, bus):
+        if bus is not None:
+            _price = float(bus.get('pricing', 0))
+            _tax = float(bus.get('tax', 0))
+            
+            return _price + (_price * (_tax / 100))
         
-        _ttl =  self._calculate_plan_pricing_(_payload_)
+        return 0
+    
+    
+    
+    def __calculate__(self):
         
-        _ttl_package_cost = float("{:.2f}".format(_ttl))
+        _totals = []
+        _package_cost_ = 0
         
-        _margin = _ttl *(float(_markup) /100)
+        for x in self.__format_days__(self.data):
+            
+            day = x.get('day')
+            
+            if day ==1 :
+               _activities = self._get_activity_price_(x.get('activities'))
+               _bus = self._calculate_bus_price(x.get('bus', None))
+               _totals.append(self._add_record_(day, _activities, NONE,_bus))
+               
+            elif day == len(self.data):
+                _activities = self._get_activity_price_(x.get('destinationActivities', []))
+                _bus = self._calculate_bus_price(x.get('returns', None))
+                _totals.append(self._add_record_(day, _activities, NONE, _bus))
+                
+            else:
+                _activities = self._get_activity_price_(x.get('destinationActivities', []))
+                _hotel = self._calculate_hotel_cost(x.get('hotel', None))
+                _totals.append(self._add_record_(day, _activities, _hotel, NONE))
+                 
         
-        _package_price_ = _ttl + _margin
-        _extras_ = {
-            'markup':f"{_markup}%",
-            'ttl_costing': _ttl,
-            'margin': _margin,
-            'package_price': _package_price_,
-            'take_rate': (_margin / _package_price_) * 100
+        for _record_ in _totals:
+            if _record_.get('activities') is not None:
+                _package_cost_ += float(_record_.get('activities', 0))
+            
+            if _record_.get('bus') is not NONE:
+                _package_cost_ += float(_record_.get('bus', 0))
+            
+            if _record_.get('hotel') is not NONE:
+                _package_cost_ += float(_record_.get('hotel', 0))
+                
+                
+        return  {
+            'data':self.__format_days__(self.data),
+            'pricing_summary':_totals,
+            'package_costing': _package_cost_
         }
-        
-        return [_payload_, _ttl_package_cost, _extras_]
-    
-    
-    def format(self):
-        return self._calculate_pricing_complete_(self._items, self.markup)
     
 
+    
+    
 
 class PdfView(APIView):
+    
+    authentication_classes = ()
+    permission_classes = ()
+    
     def post(self, request, *args, **kwargs):
+        _data = Planner(request.data.get('plans'))
         
-        _customer_name = request.data.get('Name')
-        _email = request.data.get('email')
-        _contact = request.data.get('contact')
-        _tripName = request.data.get('tripName')
-        _markup = request.data.get('markup')
-        _tripDetails = loads(request.data.get('tripdetails'))
+        if request.data.get('planningFor') is None:
+            return Response(dict(message='Plannig for is Required'))
         
-        _plans = _tripDetails.get('plans')
+        if request.data.get('tripName') is None:
+            return Response(dict(message='Plannig for is Required'))
         
-        _details = GenerateOrder(_plans, _markup)
-        
-        _summary, _pricing, extras  = _details.format()
         
         context = {
-            **_define_dict('Name', _customer_name),
-            **_define_dict('Email', _email),
-            **_define_dict('Contact', _contact),
-            **_define_dict('TripName', _tripName),
-            **_define_dict('Markup', _markup),
-            **_define_dict('summary', _summary),
-           **_define_dict('pricing', _pricing),
-           **_define_dict('extras', extras),
-        }
-        
-        _customer = {
-            **_define_dict('Name', _customer_name),
-            **_define_dict('Email', _email),
-            **_define_dict('Contact', _contact),
+            'Name':request.data.get('customer', 0),
+            'tripName':request.data.get('tripName'),
+            'planningFor':request.data.get('planningFor'),
+            'data': _data.get_formated(),
             
         }
         
-        __package_detail_ = dumps({
-            'customer': _customer,
-            'summary':_summary,
-            'pricing': _pricing,
-            'extras': extras
-        })
-        
-        
-        _package = PackageDetail(name= _tripName, details = __package_detail_, state ='CREATED')
-        
-        _package.save()
-        
-        
-        
-        
-        
-        _template = render( request ,'packages/index.html', context)
-        return HttpResponse(_template)
+        return Response(context, 200)        
+        #return render(request, 'packages/finalize.html', context)
+    
     
     def get(self, request, *args, **kwargs):
-        _tripDetails = test_data
-        _plans = _tripDetails['plans']    
         
-        _markup = 15
+        _data = Planner(test_data.get('plans'))
         
+        context = {
+            'Name':test_data.get('customer', 0),
+            'tripName':test_data.get('tripName'),
+            'planningFor':test_data.get('planingFor'),
+            'data': _data.get_formated(),
+            'dataLength':len(test_data.get('plans'))
+        }
         
-        
-        _order_details_ = GenerateOrder(_plans, _markup)
-        
-        _fmt_ =  _order_details_.format()
-        
-        
-        print(_fmt_)
-        
-        _template = render(request, 'packages/index.html')
-        return HttpResponse(_template)
+        return render(request, 'packages/finalize.html', context)
     
+    
+class CalculateTAkeRate(APIView):
+    
+    def post(self, request, *args, **kwargs):
+        
+        _data = request.data
+        
+        _Package_price = _data.get('costing', 0)
+        
+        if not _Package_price > 0 :
+            return Response(dict(message='Package cost cannot be zero'), 400)
+        _markup = _data.get('markup', 1)
+
+        if not _markup > 0:
+            return Response(dict(message='Markup Percentage cannot be zero'), 400)
+        
+        _margin = float(_Package_price) * (float(_markup) / 100)
+        
+        _order_base = float(_Package_price) + float(_margin)
+        
+        take_rate = round(float(_margin/_order_base) * 100, 2)
         
         
+        context = dict(margin= f"₹ { _margin}", totalCost= f"₹ {_order_base}" , takeRate= f"{take_rate} %", packageCost=f"₹ {_Package_price}",)
+        
+        return Response(context, 200)
+        
+            
+            
+            
+class OrderGeneration(APIView):
+    
+    def isNotNull(self, data):
+        print(type(data))
+        
+        if data is None:
+            return False
+        
+        if(isinstance(data, dict)):
+            return len(data.keys()) > 0
+        
+        if(isinstance(data, list)):
+            return len(data) > 0
+        
+        if(isinstance(data, str)):
+            return len(data) > 0
+        
+        return False  
+    
+    def post(self, request, *args, **kwargs):
+        
+        _user = request.user
+        
+        order_details = request.data.get('plans')
+        markup_details = request.data.get('marking')
+        pricing_details = request.data.get('costing')
+        trip_details = request.data.get('trip')
+        name = request.data.get('customer').get('name')
+        email = request.data.get('customer').get('email')
+        contact = request.data.get('customer').get('contact')
+        
+        
+        validation_list  = [
+            self.isNotNull(name),
+            self.isNotNull(contact),
+            self.isNotNull(email),
+            self.isNotNull(order_details),
+            self.isNotNull(markup_details),
+            self.isNotNull(pricing_details),
+            self.isNotNull(trip_details)
+        ]
+         
+        
+        if(reduce( lambda x, y : x and y, validation_list)):
+            
+            _payload = dict(
+                name=name,
+                contact=contact, 
+                email=email, 
+                order_details=dumps(order_details), 
+                markup_details=dumps(markup_details), 
+                pricing_details=dumps(pricing_details), 
+                trip_details=dumps(trip_details), 
+                created_by=request.user
+                )
+            _order = OrderDetail.objects.create(**_payload)
+            return Response(dict(message=f"Order Generated successfully", ), 200)
+            
+        return Response(dict(message='Order Cannot be generated at this time try again'), 200)
+    
+
+
+
+class OrderListSerializer(serializers.ModelSerializer):
+    
+    tripName = serializers.SerializerMethodField('_get_trip')
+    tripDescription = serializers.SerializerMethodField('_get_trip_description')
+    pricing = serializers.SerializerMethodField('_get_pricing')
+    
+    class Meta:
+        model = OrderDetail
+        fields = ['id', 'name', 'contact', 'tripName' , 'tripDescription', 'pricing']
+        
+    def _get_trip(self, _object):
+        _trip_details = loads(_object.trip_details)
+        return _trip_details.get('tripName')
+        
+    def _get_trip_description(sel, _object):
+        _trip_details = loads(_object.trip_details)
+        return _trip_details.get('description')
+        
+    
+    def _get_pricing(self, _object):
+        _markup = loads(_object.markup_details)
+        
+        
+        return _markup
+ 
+ 
+class OrderSerializer(serializers.ModelSerializer):
+    
+    pricing_details = serializers.SerializerMethodField('_pricing_details')
+    order_details = serializers.SerializerMethodField('_order_details')
+    markup_details = serializers.SerializerMethodField('_markup_details')
+    trip_details = serializers.SerializerMethodField('_trip_details')
+    
+    def _pricing_details(self, obj):
+        return loads(obj.pricing_details)
+    
+    def _order_details(self, obj):
+        return loads(obj.order_details)
+    
+    def _markup_details(self, obj):
+        return loads(obj.markup_details)
+    
+    def _trip_details(self, obj):
+        return loads(obj.trip_details)
+    
+    
+    class Meta:
+        model=OrderDetail
+        fields = '__all__'
+        
+        
+class OrderList(APIView):
+    
+    def get(self, request, *args, **kwargs):
+        _user = request.user
+        
+        _serializer = OrderListSerializer(OrderDetail.objects.filter(created_by= _user), many=True)        
+        return Response(_serializer.data, 200)
+
+
+
+def _format_data_(_data):
+    
+    _order_data_ = Planner(_data.order_details)
+    _trip_details_ = _data.trip_details
+    from django.contrib.auth.models import User
+    _created_by_ = User.objects.get(pk=_data.created_by)
+    _details_ = _order_data_.get_formated()
+    
+    
+    
+      
+    context = {
+            'Name':_data.name,
+            'tripName': _trip_details_.tripName,
+            'tripDescription': _trip_details_.description,
+            'planningFor':_trip_details_.planningFor,
+            'data': _details_,
+            'creator': _created_by_.username,
+            'salesPrice':_data.markup_details.totalCost,
+            'supportNumber':'9818247900',
+            'supportEmail':'support@yolobus.in',
+            'tripDetails':_data.trip_details ,
+            'dataLength':len(_details_.get('data'))
+        }
+    
+    return context
+
+
+
+@api_view(['GET'])
+@authentication_classes([])
+@permission_classes([])    
+def render_pdf(request, id):
+    _orderDetail = OrderDetail.objects.get(pk=id)
+    
+    if(_orderDetail is not None):
+        
+        from attrdict import AttrDict
+        _serializer = OrderSerializer(_orderDetail)
+        context = _format_data_(AttrDict(**_serializer.data))
+        return render(request, 'packages/finalize.html', context)
+        #return render(request, 'packages/order.html', context)
+        
+        #return Response(context, 200)
+    return Response({'message':id}, 200)

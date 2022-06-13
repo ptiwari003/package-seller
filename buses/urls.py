@@ -5,12 +5,10 @@ from .views import (
     get_bus_type,
     create_bus,
     create_bus_type,
-    get_buses,
-    get_bus_type_citywise
+    get_buses
 )
 
 urlpatterns = [
-    path('list/<int:city>', get_bus_type_citywise, name="bus_crud_view"),
     path('types', get_bus_type, name="hotel_crud_view"),
     path('bus/types', create_bus_type, name="create_bus_type"),
     path('add_bus', create_bus, name='add_bus'),

@@ -6,21 +6,13 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import CityPair,City
-from .serializers import (Pair, PairSerializer, PairListSerialzier, CitySerializer,CityListSerializer)
-
-class CityList(APIView):
-    def get(self, _, format=None):
-        _city_datasource = City.objects.all()
-
-        _cities = CityListSerializer(_city_datasource, many=True)
-        
-        return Response(_cities.data, status=status.HTTP_200_OK)
+from .models import CityPair
+from .serializers import (Pair, PairSerializer, PairListSerialzier)
 
 class PairList(APIView):
     
     def get(self, _, format=None):
-        _pair_datasource = [ Pair(p.pk, p.source.name, p.destination.name, p.source.pk, p.destination.pk) for p in CityPair.objects.all() ]
+        _pair_datasource = [ Pair(p.pk, p.source.name, p.destination.name) for p in CityPair.objects.all() ]
 
         _pairs = PairListSerialzier(_pair_datasource, many=True)
         

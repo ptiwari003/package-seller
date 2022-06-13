@@ -77,7 +77,7 @@
                 <h1>Total Cost Including Tax</h1>
                 <em>Note: All above prices are subject to change without prior notice as per availability, the final date of
                 travel and any changes in taxes.</em>
-                <h1>₹ {{ extras.package_price }}</h1>
+                <h1>₹ {{ salesPrice }}</h1>
             </div>
             <div>Day Wise Details</div>
             {% for detail in summary %}
@@ -140,10 +140,6 @@
                             <div class="card-block">
                                 {% for room in detail.hotel.rooms %}
                                     <div class="row">
-                                        <!-- <div class="col-6">Check In</div>
-                                        <div class="col-6">Check Out</div>
-                                        <div class="col-6 pt-2" style="font-weight: bold;">30 Apr, Sat 12 PM</div>
-<div class="col-6 pt-2" style="font-weight: bold;">03 May, Tue 11 AM</div> -->
                                         <div class="col-12 pt-2">
                                             <p>
                                                 Meal Plan

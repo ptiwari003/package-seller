@@ -4,8 +4,9 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
 from django.db import transaction
+from Cities.models import City
 from hotels.models import ImageResource
-from Cities.models import CityPair
+
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import authentication_classes
 
@@ -13,14 +14,14 @@ from rest_framework.decorators import authentication_classes
 from urllib.parse import parse_qs
 
 from .serializers import (
-    BusSerializer, TypeSerializer
+    BusSerializer, CityPairSerializer, TypeSerializer
 )
 
 
 from django.db.models import Q
 
 
-from .models import (BusType, BusImage, Bus)
+from .models import (BusType, BusImage, Bus, CityPair)
 
 """ utils """
 @transaction.atomic()
@@ -58,20 +59,6 @@ def get_bus_type(request):
 
 
 
-# @api_view(['POST'])
-# @authentication_classes([TokenAuthentication])
-# @transaction.atomic()
-# def create_bus(request):
-#     _serializer = BusSerializer(data= {**request.data})
-#     if _serializer.is_valid():
-#         _serializer.save()
-        
-#         return Response(_serializer.data, 200)
-    
-#     return Response(_serializer.errors, 400)
-
-
-
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @transaction.atomic()
@@ -80,9 +67,10 @@ def create_bus(request):
     __pair__ = CityPair.objects.get(pk=request.data.get('pair'))
     __type_ = BusType.objects.get(pk=request.data.get('type'))
     _bus_ =  Bus(**{**request.data, 'pair':__pair__, 'type':__type_})
+    
     _bus_.save()
-    return Response({'message':'Bus created','id':_bus_.pk})
-
+    return Response({'message':'Bus created'})
+    
 
 @api_view(['POST'])
 @transaction.atomic()
@@ -128,14 +116,6 @@ def create_bus_type(request):
     return Response(_serializer.errors, 400)
 
 
-@api_view(['GET'])
-@transaction.atomic()
-def get_bus_type_citywise(request,city):
-    _data = Bus.objects.all().filter(pair=city)
-    _serializer = BusSerializer(_data, many=True)
-    return Response(_serializer.data, 200) 
-
-
 
 @api_view(['GET'])
 @authentication_classes([TokenAuthentication])
@@ -161,33 +141,6 @@ def get_buses(request):
         return Response(_serailizer.data, 200)    
     
     return Response({'message':'NOP'})
-
-
-# @api_view(['GET'])
-# @authentication_classes([TokenAuthentication])
-# def get_buses(request):
-#     _query = parse_qs(request.GET.urlencode())
-    
-#     _query_dict = _query
-    
-#     print(_query_dict)
-    
-#     if('city' in _query_dict.keys()) and ('type' in _query_dict.keys()):
-#         _city = _get_first_item(_query_dict, 'city')
-#         _type = _get_first_item(_query_dict, 'type')
-        
-#         print((_city, _type))
-        
-#         _bus_objects = Bus.objects.filter(
-#             Q(source__name__icontains = _city) & Q(type__pk = _type)
-#         )
-        
-#         _serailizer = BusSerializer(_bus_objects, many=True)
-        
-#         return Response(_serailizer.data, 200)    
-    
-#     return Response({'message':'NOP'})
-
 
 
 
