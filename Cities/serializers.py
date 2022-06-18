@@ -4,20 +4,25 @@ from rest_framework import serializers
 
 class Pair:
     
-    def __init__(self, id, source, destination) -> None:
+    def __init__(self, id, source, destination, source_id ,destination_id) -> None:
+        self.id = id
         self.source = source
         self.destination = destination
-        self.id = id
-        
+        self.destination_id= destination_id
+        self.source_id= source_id
 
 
 class PairListSerialzier(serializers.Serializer):
-    
+    id = serializers.IntegerField()
     source = serializers.CharField(max_length=255)
     destination = serializers.CharField(max_length = 255)
-    id = serializers.IntegerField()
+    destination_id = serializers.IntegerField()
+    source_id = serializers.IntegerField()
     
-    
+class CityModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = City
+        fields = '__all__'
 
 class PairSerializer(serializers.Serializer):
     
@@ -33,7 +38,10 @@ class PairSerializer(serializers.Serializer):
         return CityPair.objects.create(source= _source, destination= _destination)
     
 
-    
+
+class CityListSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name=serializers.CharField(max_length=50)
     
 class CitySerializer(serializers.ModelSerializer):
     

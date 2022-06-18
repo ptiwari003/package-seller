@@ -1,7 +1,7 @@
 from unicodedata import name
 from django.urls import path
 from .views import HOtelCrudView, RoomCategoryCrudView,ResourcesView, UserProfileView
-from .hotels import create_hotel, add_room , add_images, add_meal, get_hotel_list, get_hotel_list_in_city
+from .hotels import create_hotel, add_room , add_images, add_meal, get_hotel_list, get_hotel_list_in_city,get_hotel_list_by_cityid
 
 
 urlpatterns = [
@@ -14,6 +14,6 @@ urlpatterns = [
     path('add_images/<int:hotel>', add_images, name='add_room'),
     path('add_meal/<int:room>/hotel/<int:hotel>', add_meal, name='add_meal'),
     path('fetch/hotels/<str:city>', get_hotel_list_in_city, name='hotel_list_city'),
-    path('list/hotels/<int:city>/category/<int:category>', get_hotel_list, name='hotel_list'),
+    path('list/hotels/<int:city>/category/<int:category>', get_hotel_list_by_cityid, name='hotel_list'),
     path('user/profile', UserProfileView.as_view(), name="user profile")
 ]

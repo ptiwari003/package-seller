@@ -2,16 +2,25 @@ from dataclasses import field, fields
 from pyexpat import model
 from re import L
 from statistics import mode
+from Cities.serializers import CityModelSerializer,CitySerializer
 
-from Cities.serializers import CitySerializer
 from .models import HotelCategory, HotelImage, RoomCategory, Hotel, MealPlan, Room
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
+
 
 
 class HotelCategorySerializer(ModelSerializer):
     class Meta:
         model = HotelCategory
         fields = ['id', 'name']
+
+class HotelSerializer(ModelSerializer):
+    city = CityModelSerializer(many=False)
+    category = HotelCategorySerializer(many=False)
+    class Meta:
+        model=Hotel
+        fields=['id', 'name','stars','address','budget','is_active','category','city']
+
         
 
 class RoomCategorySerializer(ModelSerializer):
@@ -78,14 +87,14 @@ class HotelSerializer(ModelSerializer):
  
  
  
- 
+
 class HotelISerializer(ModelSerializer):
     
     class Meta:
         model = Hotel
         fields = '__all__'
-        
-        
+
+
+
 
         
- 

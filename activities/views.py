@@ -47,7 +47,7 @@ def update_activity(request, id):
 
 
 
-
+    
 @api_view(['GET'])
 @authentication_classes([TokenAuthentication])
 def list_activity(request):
@@ -59,24 +59,52 @@ def list_activity(request):
     if 'q' in _dictonary.keys():
         
         _sQ = _dictonary['q'][0]
-    
-        if 'city' in _dictonary.keys():
+     
+    if 'city' in _dictonary.keys():
             _cQ = _dictonary['city'][0]
             _data = Activity.objects.filter(
-                Q(name__contains= _sQ) & Q(city__name__contains = _cQ)
+                Q(city__name__contains = _cQ)
             )
             _serializer=  ActivitySerializer(_data, many=True)
             return Response(_serializer.data, 200)
-    
-        _data = Activity.objects.filter(Q(name__contains = _sQ))
-        _serializer=  ActivitySerializer(_data, many=True)
-        return Response(_serializer.data, 200)
     
     _data = Activity.objects.all()
     
     _serializer = ActivitySerializer(_data, many=True)
     
     return Response(_serializer.data, 200)
+
+
+
+# @api_view(['GET'])
+# @authentication_classes([TokenAuthentication])
+# def list_activity(request):
+#     _qs = request.GET.urlencode()
+#     _dictonary = (parse_qs(_qs))
+   
+#     print(_dictonary)
+     
+#     if 'q' in _dictonary.keys():
+        
+#         _sQ = _dictonary['q'][0]
+    
+#         if 'city' in _dictonary.keys():
+#             _cQ = _dictonary['city'][0]
+#             _data = Activity.objects.filter(
+#                 Q(name__contains= _sQ) & Q(city__name__contains = _cQ)
+#             )
+#             _serializer=  ActivitySerializer(_data, many=True)
+#             return Response(_serializer.data, 200)
+    
+#         _data = Activity.objects.filter(Q(name__contains = _sQ))
+#         _serializer=  ActivitySerializer(_data, many=True)
+#         return Response(_serializer.data, 200)
+    
+#     _data = Activity.objects.all()
+    
+#     _serializer = ActivitySerializer(_data, many=True)
+    
+#     return Response(_serializer.data, 200)
     
 
 

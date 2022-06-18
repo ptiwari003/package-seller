@@ -35,6 +35,7 @@ urlpatterns = [
     path("v1/buses/", include('buses.urls')),
     path("v1/packages/", include('pack_orders.urls')),
     path('agent/', include('uiflow.urls'))
+
     
 ] + static(settings.MEDIA_URL, document_root= settings.MEDIA_ROOT) + static(settings.STATIC_URL , document_root= settings.STATIC_ROOT)
 

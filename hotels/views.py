@@ -2,13 +2,31 @@ from json import dumps
 from django.shortcuts import render
 from rest_framework import views
 # Create your views here.
-from .models import HotelCategory, RoomCategory, ImageResource
+from .models import HotelCategory, RoomCategory, ImageResource,Hotel
 from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
 
-from .serializers import HotelCategorySerializer, RoomCategorySerializer
+from .serializers import HotelCategorySerializer, RoomCategorySerializer,HotelSerializer
+
 
 from rest_framework import serializers
+
+class UserProfileView(views.APIView):
+    
+    authentication_classes = (TokenAuthentication,)
+    
+    def get(self, request, format=None):
+        _user_data_ = request.user
+        
+        return Response({'username': _user_data_.username})
+        
+class HotelListView(views.APIView):
+    def get(self,_,city,format=None):
+        _hotel_list = Hotel.objects.all().filter(city=city)
+        print(_hotel_list)
+        _serializer = HotelSerializer(_hotel_list,many=True)
+        print(_serializer.data)
+        return Response(_serializer.data,status=200)
 
 class HOtelCrudView(views.APIView):
     
@@ -85,14 +103,5 @@ class ResourcesView(views.APIView):
     
     
     
-class UserProfileView(views.APIView):
-    
-    authentication_classes = (TokenAuthentication,)
-    
-    def get(self, request, format=None):
-        _user_data_ = request.user
-        
-        return Response({'username': _user_data_.username})
-        
-        
+
 
