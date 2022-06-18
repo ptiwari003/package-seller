@@ -56,7 +56,7 @@ INSTALLED_APPS = [
 ]
 
 CORS_ORIGIN_WHITELIST = [
-    'https://package-admin-stage.yolobus.in/',
+    'https://package-admin-stage.yolobus.in',
     'https://package-seller.herokuapp.com',
     'http://localhost:8000',
     'http://127.0.0.1:8000',
