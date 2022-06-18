@@ -28,6 +28,7 @@ DEBUG = True
 # CORS_ORIGIN_ALLOW_ALL = True 
 
 ALLOWED_HOSTS = [
+    'package-admin-stage.yolobus.in',
     'localhost',
     '127.0.0.1',
     'package-seller.herokuapp.com'
@@ -55,6 +56,7 @@ INSTALLED_APPS = [
 ]
 
 CORS_ORIGIN_WHITELIST = [
+    'https://package-admin-stage.yolobus.in/',
     'https://package-seller.herokuapp.com',
     'http://localhost:8000',
     'http://127.0.0.1:8000',
